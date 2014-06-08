@@ -27,6 +27,7 @@ module Initializer
       lib/routes
       lib/serializers/base
       lib/serializers/**/*.rb
+      lib/services/base
       lib/services/**
       lib/workers/**
     )

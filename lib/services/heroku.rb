@@ -8,7 +8,7 @@
 
 require 'uri'
 
-module Heroku
+module Services::Heroku
   # Get a Client configured to use HTTP Basic authentication.
   #
   # @param api_key [String] The API key to use when connecting.

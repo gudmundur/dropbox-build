@@ -7,6 +7,7 @@ gem 'heroics'
 gem 'fernet'
 gem 'omniauth-dropbox-oauth2'
 gem 'omniauth-heroku'
+gem 'redis'
 gem 'sidekiq'
 
 gem "honeybadger"

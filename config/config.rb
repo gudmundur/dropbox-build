@@ -22,6 +22,7 @@ module Config
     :heroku_bouncer_secret,
     :heroku_oauth_id,
     :heroku_oauth_secret,
+    :redis_url,
     :session_secret
 
 
