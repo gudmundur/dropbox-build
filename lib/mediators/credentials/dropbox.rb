@@ -8,7 +8,7 @@ module Mediators::Credentials
     def call
       encrypted_token = Fernet.generate(Config.fernet_secret, @token)
       key = "dropbox_#{@uid}"
-      $redis.set(key, encrypted_token)
+      $redis.hset(key, 'token', encrypted_token)
       $redis.expire(key, 86400) # a day
     end
   end

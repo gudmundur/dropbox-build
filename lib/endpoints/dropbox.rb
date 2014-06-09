@@ -4,8 +4,12 @@ require 'sidekiq'
 module Endpoints
   class Dropbox < Base
     get '/dropbox/hook' do
-      puts params[:challenge]
       params[:challenge]
+    end
+
+    post '/dropbox-hook' do
+      puts 'ERR die already'
+      200
     end
 
     post '/dropbox/hook' do
@@ -16,7 +20,12 @@ module Endpoints
         return 403
       end
 
-      DropboxDownloader.perform_async(JSON.parse(body))
+      payload = JSON.parse(body)
+      users   = payload['delta']['users']
+
+      users.each { |user_id| DropboxDownloader.perform_async(user_id) }
+
+      200
     end
 
     private

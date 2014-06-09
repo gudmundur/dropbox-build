@@ -4,14 +4,6 @@ module Endpoints
     register Pliny::Extensions::Instruments
     register Sinatra::Namespace
 
-    use Rack::Session::Cookie, :key => 'rack.session',
-      :secret => Config.session_secret
-
-    use OmniAuth::Builder do
-      provider :dropbox_oauth2, Config.dropbox_app_key, Config.dropbox_app_secret
-      provider :heroku, Config.heroku_oauth_id, Config.heroku_oauth_secret
-    end
-
     configure :development do
       register Sinatra::Reloader
     end

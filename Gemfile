@@ -1,14 +1,15 @@
 source "https://rubygems.org"
 ruby "2.1.1"
 
+gem 'aws-sdk'
 gem 'dropbox-sdk'
-gem 'heroics'
-
 gem 'fernet'
+gem 'heroics'
 gem 'oauth2'
 gem 'omniauth-dropbox-oauth2'
 gem 'omniauth-heroku', git: 'https://github.com/cloudcity/omniauth-heroku.git', branch: 'report_uid_and_extra_params'
 gem 'redis'
+gem 'representable'
 gem 'sidekiq'
 
 gem "honeybadger"

@@ -15,6 +15,9 @@ module Config
 
   # Mandatory -- exception is raised for these variables when missing.
   mandatory \
+    :aws_access_key_id,
+    :aws_secret_access_key,
+    :aws_region,
     :database_url,
     :dropbox_app_key,
     :dropbox_app_secret,
@@ -23,6 +26,7 @@ module Config
     :heroku_oauth_id,
     :heroku_oauth_secret,
     :redis_url,
+    :s3_bucket_name,
     :session_secret
 
 
@@ -32,6 +36,7 @@ module Config
 
   # Override -- value is returned or the set default. Remember to typecast.
   override \
+    aws_region:       'us-west-1',
     db_pool:          5,
     port:             5000,
     puma_max_threads: 16,

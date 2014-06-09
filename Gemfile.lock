@@ -16,6 +16,9 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
+    aws-sdk (1.42.0)
+      json (~> 1.4)
+      nokogiri (>= 1.4.4)
     backports (3.6.0)
     byebug (2.7.0)
       columnize (~> 0.3)
@@ -63,11 +66,14 @@ GEM
     jwt (0.1.13)
       multi_json (>= 1.5)
     method_source (0.8.2)
+    mini_portile (0.6.0)
     minitest (5.3.4)
     moneta (0.7.20)
     multi_json (1.10.1)
     multipart-post (2.0.0)
     netrc (0.7.7)
+    nokogiri (1.6.2.1)
+      mini_portile (= 0.6.0)
     oauth2 (0.8.1)
       faraday (~> 0.8)
       httpauth (~> 0.1)
@@ -114,6 +120,10 @@ GEM
     rake (10.3.2)
     redis (3.1.0)
     redis-namespace (0.4.3)
+    representable (1.8.4)
+      multi_json
+      nokogiri
+      uber
     rr (1.1.2)
     rspec-core (3.0.0)
       rspec-support (~> 3.0.0)
@@ -151,12 +161,14 @@ GEM
     timers (1.1.0)
     tzinfo (1.2.1)
       thread_safe (~> 0.1)
+    uber (0.0.6)
     valcro (0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  aws-sdk
   committee
   database_cleaner
   dropbox-sdk
@@ -177,6 +189,7 @@ DEPENDENCIES
   rack-test
   rake
   redis
+  representable
   rr
   rspec-core
   rspec-expectations
