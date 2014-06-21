@@ -7,11 +7,6 @@ module Endpoints
       params[:challenge]
     end
 
-    post '/dropbox-hook' do
-      puts 'ERR die already'
-      200
-    end
-
     post '/dropbox/hook' do
       body = request.body.read
       signature = request.env['HTTP_X_DROPBOX_SIGNATURE']
