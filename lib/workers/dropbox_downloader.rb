@@ -23,7 +23,12 @@ class DropboxDownloader
       fetch_delta
 
       @delta_entries.each do |entry|
-        fetch_file(entry.path)
+        case entry.operation
+        when :fetch
+          fetch_file(entry.from_path)
+        when :delete
+          delete_file(entry.from_path)
+        end
       end
 
       archive_cache
@@ -77,7 +82,11 @@ class DropboxDownloader
     Pliny.log(fetch_delta: true, dropbox_user: @user_id) do
       @delta = OpenStruct.new(@dropbox.delta(@cursor))
       @delta_entries = @delta.entries.map do |from_path, metadata|
-        OpenStruct.new(metadata.merge(from_path: from_path))
+        if metadata.nil?
+          OpenStruct.new(from_path: from_path, operation: :delete)
+        else
+          OpenStruct.new(metadata.merge(from_path: from_path, operation: :fetch))
+        end
       end
     end
   end
@@ -89,6 +98,14 @@ class DropboxDownloader
       File.open("#{build_dir}/#{File.basename(path)}", 'wb') do |file|
         file.write(contents)
       end
+    end
+  end
+
+  def delete_file(path)
+    Pliny.log(delete_file: true, dropbox_user: @user_id, path: path) do
+      # TODO Deal with paths correctly
+      # TODO Deal with dropbox's case insensitivity, see http://lostechies.com/derickbailey/2011/04/14/case-insensitive-dir-glob-in-ruby-really-it-has-to-be-that-cryptic/
+      File.delete("#{build_dir}/#{File.basename(path)}")
     end
   end
 
