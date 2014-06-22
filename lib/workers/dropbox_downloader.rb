@@ -8,7 +8,6 @@ class DropboxDownloader
 
     fetch_token
     setup_clients
-    fetch_cursor
 
     @work_dir = Dir.mktmpdir
     Pliny.log(dropbox_user: @user_id, work_dir: @work_dir)
@@ -16,10 +15,11 @@ class DropboxDownloader
     begin
       create_build_dir
 
+      fetch_cursor_and_cache
       if @cursor
-        fetch_cache
         extract_cache
       end
+
       fetch_delta
 
       @delta_entries.each do |entry|
@@ -27,8 +27,7 @@ class DropboxDownloader
       end
 
       archive_cache
-      upload_cache
-      store_cursor(@delta.cursor)
+      upload_cache(@delta.cursor)
     ensure
       FileUtils.remove_entry(@work_dir)
     end
@@ -45,18 +44,16 @@ class DropboxDownloader
     @bucket  = @s3.buckets[Config.s3_bucket_name]
   end
 
-  def fetch_cursor
-    @cursor = $redis.hget("dropbox_#{@user_id}", 'delta_cursor')
-  end
-
   def create_build_dir
     FileUtils.mkdir(build_dir)
   end
 
-  def fetch_cache
+  def fetch_cursor_and_cache
     Pliny.log(fetch_cache: true, dropbox_user: @user_id) do
       obj = @bucket.objects[cache_name]
       return unless obj.exists?
+
+      @cursor = obj.metadata['dropbox_cursor']
 
       Pliny.log(fetch_cache: true, cache_hit: true, cache_name: cache_name) do
         File.open("#{@work_dir}/#{cache_name}", 'wb') do |file|
@@ -101,16 +98,14 @@ class DropboxDownloader
     end
   end
 
-  def upload_cache
+  def upload_cache(cursor)
     Pliny.log(upload_cache: true, cache_name: cache_name) do
       obj = @bucket.objects[cache_name]
       path = Pathname.new("#{@work_dir}/#{cache_name}")
-      obj.write(path, content_type: 'application/x-gzip; charset=binary')
+      metadata = { dropbox_cursor: cursor }
+      obj.write(path, content_type: 'application/x-gzip; charset=binary',
+        metadata: metadata)
     end
-  end
-
-  def store_cursor(cursor)
-    $redis.hset("dropbox_#{@user_id}", 'delta_cursor', cursor)
   end
 
   private
