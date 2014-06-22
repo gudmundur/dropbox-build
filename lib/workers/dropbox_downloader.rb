@@ -10,7 +10,7 @@ class DropboxDownloader
     setup_clients
 
     @work_dir = Dir.mktmpdir
-    Pliny.log(dropbox_user: @user_id, work_dir: @work_dir)
+    log(work_dir: @work_dir)
 
     begin
       create_build_dir
@@ -25,7 +25,7 @@ class DropboxDownloader
       @delta_entries.each do |entry|
         case entry.operation
         when :fetch
-          fetch_file(entry.from_path)
+          fetch_file(entry.path)
         when :delete
           delete_file(entry.from_path)
         end
@@ -33,6 +33,7 @@ class DropboxDownloader
 
       archive_cache
       upload_cache(@delta.cursor)
+      schedule_build
     ensure
       FileUtils.remove_entry(@work_dir)
     end
@@ -54,13 +55,13 @@ class DropboxDownloader
   end
 
   def fetch_cursor_and_cache
-    Pliny.log(fetch_cache: true, dropbox_user: @user_id) do
+    log(fetch_cache: true) do
       obj = @bucket.objects[cache_name]
       return unless obj.exists?
 
       @cursor = obj.metadata['dropbox_cursor']
 
-      Pliny.log(fetch_cache: true, cache_hit: true, cache_name: cache_name) do
+      log(fetch_cache: true, cache_hit: true, cache_name: cache_name) do
         File.open("#{@work_dir}/#{cache_name}", 'wb') do |file|
           obj.read do |chunk|
             file.write(chunk)
@@ -71,7 +72,7 @@ class DropboxDownloader
   end
 
   def extract_cache
-    Pliny.log(extract_cache: true, dropbox_user: @user_id) do
+    log(extract_cache: true) do
       path = Pathname.new("#{@work_dir}/#{cache_name}")
       return unless path.exist?
       `cd #{@work_dir} && tar xfz #{cache_name} -C #{build_dir}`
@@ -79,7 +80,7 @@ class DropboxDownloader
   end
 
   def fetch_delta
-    Pliny.log(fetch_delta: true, dropbox_user: @user_id) do
+    log(fetch_delta: true) do
       @delta = OpenStruct.new(@dropbox.delta(@cursor))
       @delta_entries = @delta.entries.map do |from_path, metadata|
         if metadata.nil?
@@ -92,7 +93,7 @@ class DropboxDownloader
   end
 
   def fetch_file(path)
-    Pliny.log(fetch_file: true, dropbox_user: @user_id, path: path) do
+    log(fetch_file: true, path: path) do
       contents = @dropbox.get_file(path)
       # TODO Construct paths correctly
       File.open("#{build_dir}/#{File.basename(path)}", 'wb') do |file|
@@ -102,21 +103,22 @@ class DropboxDownloader
   end
 
   def delete_file(path)
-    Pliny.log(delete_file: true, dropbox_user: @user_id, path: path) do
+    log(delete_file: true, path: path) do
       # TODO Deal with paths correctly
       # TODO Deal with dropbox's case insensitivity, see http://lostechies.com/derickbailey/2011/04/14/case-insensitive-dir-glob-in-ruby-really-it-has-to-be-that-cryptic/
-      File.delete("#{build_dir}/#{File.basename(path)}")
+      file_path = "#{build_dir}/#{File.basename(path)}"
+      File.delete(file_path) if File.exist?(file_path)
     end
   end
 
   def archive_cache
-    Pliny.log(archive_cache: true, cache_name: cache_name) do
+    log(archive_cache: true, cache_name: cache_name) do
       `cd #{build_dir} && tar cfz ../#{cache_name} .`
     end
   end
 
   def upload_cache(cursor)
-    Pliny.log(upload_cache: true, cache_name: cache_name) do
+    log(upload_cache: true, cache_name: cache_name) do
       obj = @bucket.objects[cache_name]
       path = Pathname.new("#{@work_dir}/#{cache_name}")
       metadata = { dropbox_cursor: cursor }
@@ -125,7 +127,15 @@ class DropboxDownloader
     end
   end
 
+  def schedule_build
+    HerokuBuilder.perform_async(@user_id, @cursor)
+  end
+
   private
+
+  def log(data={}, &blk)
+    Pliny.log({ dropbox_downloader: true, user: @user_id }.merge(data), &blk)
+  end
 
   def build_dir
     "#{@work_dir}/build"
