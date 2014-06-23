@@ -6,6 +6,7 @@ class HerokuBuilder
   def perform(user_id, dropbox_cursor, options={})
     @user_id = user_id
     @cursor = dropbox_cursor
+    @request_id = options['request_id']
     @app_name = 'cryptic-atoll-7822'
 
     fetch_token
@@ -50,7 +51,7 @@ class HerokuBuilder
   private
 
   def log(data={}, &blk)
-    Pliny.log({ heroku_builder: true, user: @user_id }.merge(data), &blk)
+    Pliny.log({ heroku_builder: true, user: @user_id, request_id: @request_id }.merge(data), &blk)
   end
 
   def cache_name

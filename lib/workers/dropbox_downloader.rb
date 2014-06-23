@@ -5,6 +5,7 @@ class DropboxDownloader
 
   def perform(user_id, options={})
     @user_id = user_id
+    @request_id = options['request_id']
 
     fetch_token
     setup_clients
@@ -128,13 +129,13 @@ class DropboxDownloader
   end
 
   def schedule_build
-    HerokuBuilder.perform_async(@user_id, @cursor)
+    HerokuBuilder.perform_async(@user_id, @cursor, request_id: @request_id)
   end
 
   private
 
   def log(data={}, &blk)
-    Pliny.log({ dropbox_downloader: true, user: @user_id }.merge(data), &blk)
+    Pliny.log({ dropbox_downloader: true, user: @user_id, request_id: @request_id }.merge(data), &blk)
   end
 
   def build_dir
