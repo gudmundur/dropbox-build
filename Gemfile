@@ -12,7 +12,6 @@ gem 'redis'
 gem 'representable'
 gem 'sidekiq'
 
-gem "honeybadger"
 gem "multi_json"
 gem "oj"
 gem "pg"

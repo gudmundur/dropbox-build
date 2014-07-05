@@ -56,8 +56,6 @@ GEM
       moneta
       multi_json (>= 1.9.2)
       netrc
-    honeybadger (1.14.0)
-      json
     http_accept (0.1.5)
     httpauth (0.2.1)
     i18n (0.6.9)
@@ -175,7 +173,6 @@ DEPENDENCIES
   fernet
   foreman
   heroics
-  honeybadger
   multi_json
   oauth2
   oj
