@@ -13,9 +13,9 @@ module Mediators::Credentials
         token:          @token,
         refresh_token:  @refresh_token,
       }
-      encrypted_token = Fernet.generate(Config.fernet_secret, JSON.generate(message))
+      encrypted_tokens = Fernet.generate(Config.fernet_secret, JSON.generate(message))
       key = "heroku_#{@uid}"
-      $redis.set(key, encrypted_token)
+      $redis.hset(key, 'tokens', encrypted_tokens)
       $redis.expire(key, 86400) # a day
     end
   end
