@@ -3,8 +3,8 @@ require 'dropbox_sdk'
 class DropboxDownloader
   include Sidekiq::Worker
 
-  def perform(user_id, options={})
-    @user_id = user_id
+  def perform(dropbox_uid, options={})
+    @dropbox_uid = dropbox_uid
     @request_id = options['request_id']
 
     fetch_token
@@ -41,7 +41,7 @@ class DropboxDownloader
   end
 
   def fetch_token
-    encrypted_token = $redis.hget("dropbox_#{@user_id}", 'token')
+    encrypted_token = $redis.hget("dropbox_#{@dropbox_uid}", 'token')
     @token = decrypt(encrypted_token)
   end
 
@@ -129,13 +129,13 @@ class DropboxDownloader
   end
 
   def schedule_build
-    HerokuBuilder.perform_async(@user_id, @cursor, request_id: @request_id)
+    HerokuBuilder.perform_async(@dropbox_uid, @cursor, request_id: @request_id)
   end
 
   private
 
   def log(data={}, &blk)
-    Pliny.log({ dropbox_downloader: true, user: @user_id, request_id: @request_id }.merge(data), &blk)
+    Pliny.log({ dropbox_downloader: true, user: @dropbox_uid, request_id: @request_id }.merge(data), &blk)
   end
 
   def build_dir
@@ -143,7 +143,7 @@ class DropboxDownloader
   end
 
   def cache_name
-    "#{@user_id}.tar.gz"
+    "#{@dropbox_uid}.tar.gz"
   end
 
   def decrypt(message)
