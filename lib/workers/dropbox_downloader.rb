@@ -7,6 +7,7 @@ class DropboxDownloader
     @dropbox_uid = dropbox_uid
     @request_id = options['request_id']
 
+    fetch_user_id
     fetch_token
     setup_clients
 
@@ -40,8 +41,12 @@ class DropboxDownloader
     end
   end
 
+  def fetch_user_id
+    @user_id = $redis.hget(dropbox_key, 'user_id')
+  end
+
   def fetch_token
-    encrypted_token = $redis.hget("dropbox_#{@dropbox_uid}", 'token')
+    encrypted_token = $redis.hget(dropbox_key, 'token')
     @token = decrypt(encrypted_token)
   end
 
@@ -128,8 +133,14 @@ class DropboxDownloader
     end
   end
 
+  def source_url
+    log(source_url: true) do
+      @bucket.objects[cache_name].url_for(:read)
+    end
+  end
+
   def schedule_build
-    HerokuBuilder.perform_async(@dropbox_uid, @cursor, request_id: @request_id)
+    HerokuBuilder.perform_async(@user_id, source_url, @cursor, request_id: @request_id)
   end
 
   private
@@ -140,6 +151,10 @@ class DropboxDownloader
 
   def build_dir
     "#{@work_dir}/build"
+  end
+
+  def dropbox_key
+    "dropbox_#{@dropbox_uid}"
   end
 
   def cache_name
