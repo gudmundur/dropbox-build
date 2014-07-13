@@ -18,7 +18,9 @@
                     First off, I need to be able to access your Heroku account to be able to deploy.
                 </p>
                 <div>
-                    <button class="btn btn-primary">Connect to Heroku</button>
+                    <form action="/auth/heroku">
+                        <button type="submit" class="btn btn-primary">Connect to Heroku</button>
+                    </form>
                 </div>
                 <h4 class="hidden">
                     Connected to Heroku as <b>gudmundur.bjarni@gmail.com</b>
@@ -29,7 +31,9 @@
                     I also need to be able to access your Dropbox account so I can be notified about updated files.
                 </p>
                 <div>
-                    <button class="btn btn-primary">Connect to Dropbox</button>
+                    <form action="/auth/dropbox_oauth2">
+                        <button type="submit" class="btn btn-primary disabled">Connect to Dropbox</button>
+                    </form>
                 </div>
                 <h4 class="hidden">
                     Connected to Dropbox as <b>Guðmundur Bjarni Ólafsson</b>
@@ -43,8 +47,8 @@
                 </p>
                 <div class="row">
                     <div class="col-md-4">
-                    <select class="form-control">
-                        <option>my-app</option>
+                    <select class="form-control" disabled>
+                        <option></option>
                     </select>
                 </div>
                 </div>
@@ -55,7 +59,7 @@
                
                 <h2>Step four <small>Add files to your Dropbox folder</small></h2>
                 <p>
-                    In your Dropbox folder a new empty folder should have appeared under <code>Apps/Heroku Builder</code>. Try copying in your little Node.js application and head over to <a href="https://my-app.herokuapp.com">in a few seconds</a>.
+                    In your Dropbox folder, a new empty folder should have appeared under <code>Apps/Heroku Builder</code>. Try copying in your little Node.js application and head over to <a href="https://my-app.herokuapp.com">in a few seconds</a>.
                 </p>
                 <p>
                     Every time you update a file in the <code>Apps/Heroku Builder</code> folder, your app will be updated.
