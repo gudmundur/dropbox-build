@@ -13,25 +13,15 @@ module Workers
       @app_name = 'cryptic-atoll-7822'
 
       begin
-        fetch_token
         setup_clients
-
         submit_build
       rescue Errors::AuthenticationMissing
         log(auth_missing: true)
       end
     end
 
-    def fetch_token
-      encrypted_token = $redis.hget("heroku_#{@user_id}", 'tokens')
-      raise Errors::AuthenticationMissing unless encrypted_token
-
-      message = JSON.parse(Services::TokenStore.decrypt(encrypted_token))
-      @token = message['token']
-    end
-
     def setup_clients
-      @heroku = Services::Heroku.connect_oauth(@token)
+      @heroku = Services::Heroku.connect_redis(@user_id)
     end
 
     def submit_build
