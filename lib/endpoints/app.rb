@@ -6,6 +6,10 @@ module Endpoints
       apps.map { |app| format_app(app) }.to_json 
     end
 
+    post '/app' do
+      puts parse_body_params
+    end
+
     private
 
     def heroku
