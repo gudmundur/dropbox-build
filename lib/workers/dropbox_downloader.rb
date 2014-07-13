@@ -1,5 +1,3 @@
-require 'dropbox_sdk'
-
 module Workers
   class DropboxDownloader
     include Sidekiq::Worker
@@ -10,7 +8,6 @@ module Workers
 
       begin
         fetch_user_id
-        fetch_token
         setup_clients
       rescue Errors::AuthenticationMissing
         log(auth_missing: true)
@@ -52,14 +49,8 @@ module Workers
       raise Errors::AuthenticationMissing unless @user_id
     end
 
-    def fetch_token
-      encrypted_token = $redis.hget(dropbox_key, 'token')
-      raise Errors::AuthenticationMissing unless @user_id
-      @token = Services::TokenStore.decrypt(encrypted_token)
-    end
-
     def setup_clients
-      @dropbox = DropboxClient.new(@token)
+      @dropbox = DropboxClient.connect_redis(@user_id)
       @s3      = AWS::S3.new
       @bucket  = @s3.buckets[Config.s3_bucket_name]
     end
