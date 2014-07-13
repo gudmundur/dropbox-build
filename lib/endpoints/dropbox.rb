@@ -19,7 +19,7 @@ module Endpoints
       payload = JSON.parse(body)
       users   = payload['delta']['users']
 
-      users.each { |user_id| DropboxDownloader.perform_async(user_id, request_id: request_id) }
+      users.each { |user_id| Workers::DropboxDownloader.perform_async(user_id, request_id: request_id) }
 
       200
     end
