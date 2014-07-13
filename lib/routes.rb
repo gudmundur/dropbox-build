@@ -18,6 +18,7 @@ Routes = Rack::Builder.new do
   use Pliny::Router do
     # mount all endpoints here
     mount Endpoints::Account
+    mount Endpoints::App
     mount Endpoints::Auth
     mount Endpoints::Dropbox
   end
