@@ -3,6 +3,8 @@ require 'pry'
 class HerokuBuilder
   include Sidekiq::Worker
 
+  class AuthenticationMissing < StandardError; end
+
   def perform(user_id, url, version, options={})
     @user_id = user_id
     @url = url
@@ -11,15 +13,20 @@ class HerokuBuilder
     # TODO Use a selected app
     @app_name = 'cryptic-atoll-7822'
 
-    fetch_token
-    setup_clients
+    begin
+      fetch_token
+      setup_clients
 
-    submit_build
+      submit_build
+    rescue AuthenticationMissing
+      log(auth_missing: true)
+    end
   end
 
   def fetch_token
-    # TODO Deal with missing keys
     encrypted_token = $redis.hget("heroku_#{@user_id}", 'tokens')
+    raise AuthenticationMissing unless encrypted_token
+
     message = JSON.parse(decrypt(encrypted_token))
     @token = message['token']
   end
