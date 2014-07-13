@@ -8,9 +8,13 @@ module Workers
 
       begin
         fetch_user_id
+        verify_app_attached
         setup_clients
       rescue Errors::AuthenticationMissing
         log(auth_missing: true)
+        return
+      rescue Errors::AppMissing
+        log(app_missing: true)
         return
       end
 
@@ -47,6 +51,11 @@ module Workers
     def fetch_user_id
       @user_id = $redis.hget(dropbox_key, 'user_id')
       raise Errors::AuthenticationMissing unless @user_id
+    end
+
+    def verify_app_attached
+      app_id = $redis.hget("heroku_#{@user_id}", 'app_id')
+      raise Errors::AppMissing unless app_id
     end
 
     def setup_clients
