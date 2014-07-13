@@ -8,9 +8,14 @@ module Workers
       @dropbox_uid = dropbox_uid
       @request_id = options['request_id']
 
-      fetch_user_id
-      fetch_token
-      setup_clients
+      begin
+        fetch_user_id
+        fetch_token
+        setup_clients
+      rescue Errors::AuthenticationMissing
+        log(auth_missing: true)
+        return
+      end
 
       @work_dir = Dir.mktmpdir
       log(work_dir: @work_dir)
@@ -44,10 +49,12 @@ module Workers
 
     def fetch_user_id
       @user_id = $redis.hget(dropbox_key, 'user_id')
+      raise Errors::AuthenticationMissing unless @user_id
     end
 
     def fetch_token
       encrypted_token = $redis.hget(dropbox_key, 'token')
+      raise Errors::AuthenticationMissing unless @user_id
       @token = decrypt(encrypted_token)
     end
 
