@@ -26,12 +26,12 @@ module Workers
       encrypted_token = $redis.hget("heroku_#{@user_id}", 'tokens')
       raise Errors::AuthenticationMissing unless encrypted_token
 
-      message = JSON.parse(decrypt(encrypted_token))
+      message = JSON.parse(Services::TokenStore.decrypt(encrypted_token))
       @token = message['token']
     end
 
     def setup_clients
-      @heroku  = Services::Heroku.connect_oauth(@token)
+      @heroku = Services::Heroku.connect_oauth(@token)
     end
 
     def submit_build
@@ -51,11 +51,6 @@ module Workers
 
     def log(data={}, &blk)
       Pliny.log({ heroku_builder: true, user: @user_id, request_id: @request_id }.merge(data), &blk)
-    end
-
-    def decrypt(message)
-      verifier = Fernet.verifier(Config.fernet_secret, message)
-      verifier.message
     end
   end
 end

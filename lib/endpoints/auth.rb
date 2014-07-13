@@ -1,5 +1,3 @@
-require 'pry'
-
 module Endpoints
   class Auth < Base
     get '/auth/:name/callback' do
@@ -18,6 +16,22 @@ module Endpoints
       end
 
       redirect '/'
+    end
+
+    get '/auth/heroku/me' do
+      content_type :json
+
+      begin
+        heroku.account.info.to_json
+      rescue Errors::AuthenticationMissing
+        halt 401
+      end
+    end
+
+    private
+
+    def heroku
+      Services::Heroku.connect_redis(session[:user_id]) 
     end
   end
 end

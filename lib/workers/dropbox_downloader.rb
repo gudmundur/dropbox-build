@@ -55,7 +55,7 @@ module Workers
     def fetch_token
       encrypted_token = $redis.hget(dropbox_key, 'token')
       raise Errors::AuthenticationMissing unless @user_id
-      @token = decrypt(encrypted_token)
+      @token = Services::TokenStore.decrypt(encrypted_token)
     end
 
     def setup_clients
