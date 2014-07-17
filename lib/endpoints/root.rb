@@ -3,7 +3,7 @@ module Endpoints
     set :static, true
 
     get "/" do
-      send_file 'public/index.html'
+      erb :index
     end
 
     get '/app.js' do
