@@ -6,8 +6,8 @@ module Services
 
       message = JSON.parse(TokenStore.decrypt(encrypted_token))
       token = message['token']
- 
-      Services::Heroku.connect_oauth(token) 
+
+      Services::Heroku.connect_oauth(token)
     end
   end
 end
