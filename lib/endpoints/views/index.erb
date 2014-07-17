@@ -17,28 +17,33 @@
                 <p>
                     First off, I need to be able to access your Heroku account to be able to deploy.
                 </p>
+                <% if !heroku? %>
                 <div>
                     <form action="/auth/heroku">
                         <button type="submit" class="btn btn-primary">Connect to Heroku</button>
                     </form>
                 </div>
-                <h4 class="hidden">
-                    Connected to Heroku as <b>gudmundur.bjarni@gmail.com</b>
+                <% else %>
+                <h4>
+                    Connected to Heroku as <b><%= heroku_email %></b>
                 </h4>
+                <% end %>
 
                 <h2>Step two <small>Connect your Dropbox account</small></h2>
                 <p>
                     I also need to be able to access your Dropbox account so I can be notified about updated files.
                 </p>
+                <% if !dropbox? %>
                 <div>
                     <form action="/auth/dropbox_oauth2">
-                        <button type="submit" class="btn btn-primary disabled">Connect to Dropbox</button>
+                        <button type="submit" class="btn btn-primary<% unless heroku? %> disabled<% end %>">Connect to Dropbox</button>
                     </form>
                 </div>
-                <h4 class="hidden">
+                <% else %>
+                <h4>
                     Connected to Dropbox as <b>Guðmundur Bjarni Ólafsson</b>
                 </h4>
-
+                <% end %>
 
 
                 <h2>Step three <small>Select which app to deploy to</small></h2>
@@ -47,10 +52,19 @@
                 </p>
                 <div class="row">
                     <div class="col-md-4">
-                    <select class="form-control" disabled>
-                        <option></option>
-                    </select>
-                </div>
+                        <select class="form-control"<% unless heroku? && dropbox? %> disabled<% end %>>
+                        <% if heroku? && dropbox? %>
+                            <% heroku_apps.each do |app| %>
+                            <option value="<%= app[:name] %>"><%= app[:name] %></option>
+                            <% end %>
+                        <% else %>
+                            <option></option>
+                        <% end %>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-primary">Deploy to {app_name}</button>
+                    </div>
                 </div>
                 <h4 class="hidden">
                     Connected to Dropbox as <b>Guðmundur Bjarni Ólafsson</b>

@@ -10,11 +10,12 @@ module Endpoints
         Mediators::Credentials::Dropbox.run({
           user_id: session[:user_id],
           dropbox_uid: auth['uid'],
+          dropbox_name: auth.info['name'],
           token: auth['credentials']['token'],
         })
       when 'heroku'
-        session[:user_id] = auth.uid
         Mediators::Credentials::Heroku.run(auth)
+        session[:user_id] = auth.uid
       end
 
       redirect '/'

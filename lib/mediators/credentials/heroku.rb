@@ -15,7 +15,12 @@ module Mediators::Credentials
       }
       encrypted_tokens = Fernet.generate(Config.fernet_secret, JSON.generate(message))
       key = "heroku_#{@uid}"
+
+      heroku = Services::Heroku.connect_oauth(@token)
+      email = heroku.account.info["email"]
+
       $redis.hset(key, 'tokens', encrypted_tokens)
+      $redis.hset(key, 'email', email)
       $redis.expire(key, 86400) # a day
     end
   end
