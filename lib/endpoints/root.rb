@@ -17,14 +17,8 @@ module Endpoints
         user_get('dropbox_name')
       end
 
-      def heroku_apps
-        heroku = Services::Heroku.connect_redis(session[:user_id])
-        heroku.app.list.map do |app|
-          {
-            id: app['id'],
-            name: app['name']
-          }
-        end
+      def app_name
+        user_get('app_name')
       end
 
       private

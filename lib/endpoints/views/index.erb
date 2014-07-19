@@ -41,34 +41,24 @@
                 </div>
                 <% else %>
                 <h4>
-                    Connected to Dropbox as <b>Guðmundur Bjarni Ólafsson</b>
+                    Connected to Dropbox as <b><%= dropbox_name %></b>
                 </h4>
                 <% end %>
 
 
                 <h2>Step three <small>Select which app to deploy to</small></h2>
                  <p>
-                    Almost there! Which app shall I deploy your Dropbox'y code to?
+                    Almost there! Let's create an app which I'll deploy your Dropbox'y code to?
                 </p>
-                <div class="row">
-                    <div class="col-md-4">
-                        <select class="form-control"<% unless heroku? && dropbox? %> disabled<% end %>>
-                        <% if heroku? && dropbox? %>
-                            <% heroku_apps.each do |app| %>
-                            <option value="<%= app[:name] %>"><%= app[:name] %></option>
-                            <% end %>
-                        <% else %>
-                            <option></option>
-                        <% end %>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <button type="submit" class="btn btn-primary">Deploy to {app_name}</button>
-                    </div>
+                <% if app_name.nil? %>
+                <div>
+                        <button type="submit" class="btn btn-primary"<% unless heroku? && dropbox? %> disabled<% end %>>Create an app</button>
                 </div>
-                <h4 class="hidden">
-                    Connected to Dropbox as <b>Guðmundur Bjarni Ólafsson</b>
+                <% else %>
+                <h4>
+                    Deploying to <b><%= app_name %></b>
                 </h4>
+                <% end %>
 
 
                 <h2>Step four <small>Add files to your Dropbox folder</small></h2>
