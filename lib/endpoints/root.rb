@@ -34,7 +34,7 @@ module Endpoints
 
     set :static, true
 
-    get "/" do
+    get '/' do
       erb :index
     end
 
