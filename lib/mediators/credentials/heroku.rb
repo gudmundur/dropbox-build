@@ -21,7 +21,7 @@ module Mediators::Credentials
 
       $redis.hset(key, 'tokens', encrypted_tokens)
       $redis.hset(key, 'email', email)
-      $redis.expire(key, 86400) # a day
+      $redis.expire(key, Config.token_expiration) # a day
     end
   end
 end

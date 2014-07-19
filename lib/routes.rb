@@ -7,8 +7,11 @@ Routes = Rack::Builder.new do
   use Rack::Deflater
   use Rack::MethodOverride
   use Rack::SSL if Config.rack_env == "production"
-  use Rack::Session::Cookie, :key => 'rack.session',
-    :secret => Config.session_secret
+  use Rack::Session::Cookie, {
+    key: 'rack.session',
+    secret: Config.session_secret,
+    expire_after: Config.token_expiration.to_i
+  }
 
   use OmniAuth::Builder do
     provider :dropbox_oauth2, Config.dropbox_app_key, Config.dropbox_app_secret

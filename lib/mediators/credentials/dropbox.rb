@@ -15,7 +15,7 @@ module Mediators::Credentials
       $redis.hset(key, 'user_id', @user_id)
       $redis.hset(heroku_key, 'dropbox_uid', @dropbox_uid)
       $redis.hset(heroku_key, 'dropbox_name', @dropbox_name)
-      $redis.expire(key, 86400) # a day
+      $redis.expire(key, Config.token_expiration) # a day
     end
   end
 end

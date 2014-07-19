@@ -27,7 +27,8 @@ module Config
     :heroku_oauth_secret,
     :redis_url,
     :s3_bucket_name,
-    :session_secret
+    :session_secret,
+    :token_expiration
 
 
   # Optional -- value is returned or `nil` if it wasn't present.
@@ -42,5 +43,6 @@ module Config
     puma_max_threads: 16,
     puma_min_threads: 1,
     puma_workers:     3,
-    rack_env:         "development"
+    rack_env:         "development",
+    token_expiration: 86400
 end
