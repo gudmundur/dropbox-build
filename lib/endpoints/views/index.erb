@@ -52,7 +52,9 @@
                 </p>
                 <% if app_name.nil? %>
                 <div>
+                    <form action="/app" method="POST">
                         <button type="submit" class="btn btn-primary"<% unless heroku? && dropbox? %> disabled<% end %>>Create an app</button>
+                    </form>
                 </div>
                 <% else %>
                 <h4>
