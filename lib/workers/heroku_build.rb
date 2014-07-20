@@ -1,5 +1,3 @@
-require 'pry'
-
 module Workers
   class HerokuBuilder
     include Sidekiq::Worker

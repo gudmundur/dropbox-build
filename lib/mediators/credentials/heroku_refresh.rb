@@ -1,5 +1,3 @@
-require 'pry'
-
 module Mediators::Credentials
   class HerokuRefresh < Mediators::Base
     def initialize(args)
@@ -7,8 +5,6 @@ module Mediators::Credentials
     end
 
     def call
-      binding.pry
-
       encrypted_tokens = $redis.hget(heroku_key, 'tokens')
       expired_tokens   = JSON.parse(Services::TokenStore.decrypt(encrypted_tokens))
       refresh_token    = expired_tokens['refresh_token']

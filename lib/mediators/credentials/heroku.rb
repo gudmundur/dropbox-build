@@ -1,5 +1,3 @@
-require 'pry'
-
 module Mediators::Credentials
   class Heroku < Mediators::Base
     def initialize(args)
