@@ -65,7 +65,10 @@
 
                 <h2>Step four <small>Add files to your Dropbox folder</small></h2>
                 <p>
-                    In your Dropbox folder, a new empty folder should have appeared under <code>Apps/Heroku Builder</code>. Try copying in your little Node.js application and head over to <a href="https://my-app.herokuapp.com">in a few seconds</a>.
+                    In your Dropbox folder, a new empty folder should have appeared under <code>Apps/Heroku Builder</code>.
+                    <% unless app_name.nil? %>
+                    Try copying in your little Node.js application and head over to <a href="https://<%= app_name %>.herokuapp.com">in a few seconds</a>.
+                    <% end %>
                 </p>
                 <p>
                     Every time you update a file in the <code>Apps/Heroku Builder</code> folder, your app will be updated.

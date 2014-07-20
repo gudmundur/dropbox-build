@@ -14,7 +14,12 @@ module Endpoints
           token: auth['credentials']['token'],
         })
       when 'heroku'
-        Mediators::Credentials::Heroku.run(auth)
+        Mediators::Credentials::Heroku.run(
+          user_id: auth.uid,
+          token: auth['credentials']['token'],
+          refresh_token: auth['credentials']['refresh_token']
+        )
+
         session[:user_id] = auth.uid
       end
 
