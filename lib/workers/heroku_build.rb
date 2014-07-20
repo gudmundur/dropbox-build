@@ -30,7 +30,7 @@ module Workers
       raise Errors::AppMissing unless @app_name
     end
 
-    def submit_build
+    def submit_build(on_retry=false)
       log(submit_build: true) do
         payload = {
           source_blob: {
@@ -39,7 +39,14 @@ module Workers
           }
         }
 
-        @heroku.build.create(@app_name, payload)
+        begin
+          @heroku.build.create(@app_name, payload)
+        rescue Excon::Errors::Unauthorized => e
+          raise e if on_retry
+
+          Mediators::Credentials::HerokuRefresh.run(@user_id)
+          submit_build(true)
+        end
       end
     end
 
