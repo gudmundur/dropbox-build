@@ -34,9 +34,9 @@ module Workers
         @delta_entries.each do |entry|
           case entry.operation
           when :fetch
-            fetch_file(entry.path)
+            fetch(entry.path)
           when :delete
-            delete_file(entry.from_path)
+            delete(entry.from_path)
           end
         end
 
@@ -106,7 +106,7 @@ module Workers
       end
     end
 
-    def fetch_file(path)
+    def fetch(path)
       log(fetch_file: true, path: path) do
         contents = @dropbox.get_file(path)
         # TODO Construct paths correctly
@@ -116,7 +116,7 @@ module Workers
       end
     end
 
-    def delete_file(path)
+    def delete(path)
       log(delete_file: true, path: path) do
         # TODO Deal with paths correctly
         # TODO Deal with dropbox's case insensitivity, see http://lostechies.com/derickbailey/2011/04/14/case-insensitive-dir-glob-in-ruby-really-it-has-to-be-that-cryptic/
