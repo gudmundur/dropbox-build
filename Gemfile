@@ -10,6 +10,7 @@ gem 'omniauth-dropbox-oauth2'
 gem 'omniauth-heroku', git: 'https://github.com/cloudcity/omniauth-heroku.git', branch: 'report_uid_and_extra_params'
 gem 'redis'
 gem 'representable'
+gem 'rollbar'
 gem 'sidekiq'
 
 gem "multi_json"
