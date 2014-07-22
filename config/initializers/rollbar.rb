@@ -3,5 +3,7 @@ if ENV.key?('ROLLBAR_ACCESS_TOKEN')
     config.access_token = ENV.fetch('ROLLBAR_ACCESS_TOKEN')
     config.environment = Sinatra::Base.environment
     config.framework = "Sinatra: #{Sinatra::VERSION}"
+
+    config.use_sidekiq
   end
 end
