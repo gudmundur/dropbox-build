@@ -10,7 +10,7 @@ module Mediators::Credentials
       refresh_token    = expired_tokens['refresh_token']
 
       tokens = heroku.oauth_token.create(
-        client: { 
+        client: {
           secret: Config.heroku_oauth_secret
         },
         grant: {
