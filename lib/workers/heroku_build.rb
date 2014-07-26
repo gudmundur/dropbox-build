@@ -40,10 +40,8 @@ module Workers
         begin
           @heroku.build.create(@app_name, payload)
         rescue Excon::Errors::Unauthorized => e
-          raise e if on_retry
-
-          Mediators::Credentials::HerokuRefresh.run(@user_id)
-          submit_build(true)
+          Mediators::Credentials::HerokuRefresh.run(user_id: @user_id)
+          raise e
         end
       end
     end
