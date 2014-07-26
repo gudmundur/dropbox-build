@@ -33,8 +33,10 @@ module Workers
 
         @delta_entries.each do |entry|
           case entry.operation
+          when :create_dir
+            create_dir(entry.path, entry)
           when :fetch
-            fetch(entry.path)
+            fetch(entry.path, entry)
           when :delete
             delete(entry.from_path)
           end
@@ -99,6 +101,8 @@ module Workers
         @delta_entries = @delta.entries.map do |from_path, metadata|
           if metadata.nil?
             OpenStruct.new(from_path: from_path, operation: :delete)
+          elsif metadata['is_dir']
+            OpenStruct.new(metadata.merge(from_path: from_path, operation: :create_dir))
           else
             OpenStruct.new(metadata.merge(from_path: from_path, operation: :fetch))
           end
@@ -106,22 +110,30 @@ module Workers
       end
     end
 
-    def fetch(path)
+    def create_dir(path, metadata={})
+      log(create_dir: true, path: path) do
+        dir = File.join(build_dir, path)
+        FileUtils.mkdir(dir) unless Dir.exists?(dir)
+      end
+    end
+
+    def fetch(path, metadata={})
       log(fetch_file: true, path: path) do
+        full_path = File.join(build_dir, path)
         contents = @dropbox.get_file(path)
-        # TODO Construct paths correctly
-        File.open("#{build_dir}/#{File.basename(path)}", 'wb') do |file|
+        File.open(full_path, 'wb') do |file|
           file.write(contents)
         end
       end
     end
 
     def delete(path)
-      log(delete_file: true, path: path) do
+      log(delete: true, path: path) do
         # TODO Deal with paths correctly
         # TODO Deal with dropbox's case insensitivity, see http://lostechies.com/derickbailey/2011/04/14/case-insensitive-dir-glob-in-ruby-really-it-has-to-be-that-cryptic/
-        file_path = "#{build_dir}/#{File.basename(path)}"
-        File.delete(file_path) if File.exist?(file_path)
+        full_path = File.join(build_dir, path)
+        return Dir.unlink(full_path) if File.directory?(full_path)
+        return File.delete(full_path) if File.file?(full_path)
       end
     end
 
