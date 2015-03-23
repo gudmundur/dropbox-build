@@ -1,0 +1,46 @@
+{
+  "name":"dropbox-build",
+  "scripts":{
+    "postdeploy":"rake db:schema:load db:migrate"
+  },
+  "env":{
+    "AWS_ACCESS_KEY_ID":{
+      "required":true
+    },
+    "AWS_REGION":"us-east-1",
+    "AWS_SECRET_ACCESS_KEY":{
+      "required":true
+    },
+    "DROPBOX_APP_KEY":{
+      "required":true
+    },
+    "DROPBOX_APP_SECRET":{
+      "required":true
+    },
+    "FERNET_SECRET":{
+      "generator":"secret"
+    },
+    "HEROKU_OAUTH_ID":{
+      "required":true
+    },
+    "HEROKU_OAUTH_SECRET":{
+      "required":true
+    },
+    "LANG":{
+      "required":true
+    },
+    "RACK_ENV":{
+      "required":true
+    },
+    "S3_BUCKET_NAME":{
+      "required":true
+    },
+    "SESSION_SECRET":{
+      "generator":"secret"
+    }
+  },
+  "addons":[
+    "rollbar-9449593",
+    "sailing-avidly-3302"
+  ]
+}
